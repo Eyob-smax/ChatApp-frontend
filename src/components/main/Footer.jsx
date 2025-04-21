@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { LuSend } from "react-icons/lu";
 // import { MessageContext } from "../context/context";
 
-export default function Footer({ setMessages }) {
+export default function Footer({ setMessages, handleTyping }) {
   const [m, setM] = useState("");
 
   function getFormData(e) {
@@ -20,6 +20,7 @@ export default function Footer({ setMessages }) {
         <div className="w-[70%] h-[80%] flex items-center justify-between px-4">
           <input
             type="text"
+            onKeyDown={() => handleTyping()}
             onChange={(e) => setM(e.target.value)}
             placeholder="Type a message..."
             className="w-full h-full px-4 rounded-[14px]focus:outline-none outline-none text-[20px]"
