@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { LuSend } from "react-icons/lu";
+import { FaPaperPlane } from "react-icons/fa";
+
 // import { MessageContext } from "../context/context";
 
 export default function Footer({ setMessages, handleTyping }) {
@@ -27,7 +28,7 @@ export default function Footer({ setMessages, handleTyping }) {
           />
         </div>
         <button className="w-[69px] h-[51px] rounded-[14px] ring-1 ring-balck flex items-center justify-center bg-white shadow-md">
-          <LuSend type="submit" className="text-[#FD329B] text-[26px]" />
+          <FaPaperPlane type="submit" className="text-[#FD329B] text-[26px]" />
         </button>
       </form>
     </footer>
