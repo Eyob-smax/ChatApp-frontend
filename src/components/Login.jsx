@@ -6,7 +6,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   function handleSubmit(e) {
-    console.log("KJSDFHSLKD");
     e.preventDefault();
     const formData = new FormData(e.target);
     const username = formData.get("username");
@@ -17,7 +16,13 @@ export default function Login() {
       password === "eyukal"
     ) {
       localStorage.setItem("logged_in", true);
-      navigate("/chat");
+      const loginData = {
+        username: username,
+        password: password,
+      };
+      navigate("/chat", {
+        state: { loginData },
+      });
     }
   }
 
