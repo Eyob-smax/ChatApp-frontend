@@ -12,5 +12,5 @@ export default function AuthRequired() {
     }
   }, [auth, navigate]);
 
-  return auth ? <Outlet /> : null;
+  return auth ? <Outlet /> : <Login />;
 }
