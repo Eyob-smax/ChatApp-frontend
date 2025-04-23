@@ -13,8 +13,8 @@ export default function Login() {
     const password = formData.get("password");
 
     if (
-      username === "eyoba" ||
-      (username === "kalye" && password === "eyukal")
+      (username === "eyoba" || username === "kalye") &&
+      password === "eyukal"
     ) {
       localStorage.setItem("logged_in", true);
       navigate("/chat");
