@@ -13,7 +13,6 @@ export default function Main() {
     const handleIncomingMessage = (data) => {
       setMessages((prev) => [...prev, { message: data, isUser: false }]);
     };
-
     const handleRemoteTyping = () => {
       setRemoteTyping(true);
       clearTimeout(typingTimeoutRef.current);
@@ -21,7 +20,6 @@ export default function Main() {
         setRemoteTyping(false);
       }, 3000);
     };
-
     const handleRemoteStopTyping = () => {
       setRemoteTyping(false);
     };
