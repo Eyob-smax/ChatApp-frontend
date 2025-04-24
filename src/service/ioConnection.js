@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000", {
+const socket = io("https://chat-app-frontend-vert-seven.vercel.app", {
   transports: ["websocket"],
 });
 export default socket;

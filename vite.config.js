@@ -5,4 +5,13 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    proxy: {
+      websocket: {
+        target: "https://chat-app-frontend-vert-seven.vercel.app", // Corrected URL
+        ws: true,
+        changeOrigin: true,
+      },
+    },
+  },
 });
