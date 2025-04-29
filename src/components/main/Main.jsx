@@ -10,9 +10,9 @@ export default function Main() {
   const [messageObjData, setMessageObjData] = useState({});
   useSendMessage(messageObjData);
 
-  function deleteMessage(id) {}
+  // function deleteMessage(id) {}
 
-  function editMessage(id) {}
+  // function editMessage(id) {}
 
   useEffect(() => {
     (async () => {
@@ -76,8 +76,8 @@ export default function Main() {
             text={item.message}
             isUser={item.isUser}
             time={item.time}
-            deleteMessage={deleteMessage}
-            editMessage={editMessage}
+            // deleteMessage={deleteMessage}
+            // editMessage={editMessage}
             // messaId={}
           />
         ))}

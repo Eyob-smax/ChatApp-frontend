@@ -57,10 +57,10 @@ async function addMessages(data) {
   }
 }
 
-async function deleteMessageById(id) {
+async function deleteMessageById(messageId) {
   !id ? "Incomplete data" : null;
   try {
-    const res = await fetch(`${id}//delete-message/${id}`);
+    const res = await fetch(`${id}/delete-message/${messageId}`);
     const data = await res.json();
     if (!data.success) {
       return {
