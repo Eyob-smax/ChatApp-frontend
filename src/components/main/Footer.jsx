@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 
-export default function Footer({ setMessages, handleSend }) {
+export default function Footer({ handleSend }) {
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
