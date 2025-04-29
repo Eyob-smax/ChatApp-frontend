@@ -1,12 +1,46 @@
-import React from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import Options from "./Options";
 export default function MessageBubble({ text, isUser, time = "01:20 PM" }) {
+  const [showOption, setShowOption] = useState(false);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (buttonRef.current && !buttonRef.current.contains(e.target)) {
+        setShowOption(false);
+      }
+    };
+
+    document.addEventListener("touchstart", handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("touchstart", handleOutsideClick);
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const timerRef = useRef(null);
+  function handleStartPressing() {
+    timerRef.current = setTimeout(() => {
+      setShowOption(true);
+    }, 300);
+  }
+
+  function handleEndPressing() {
+    clearInterval(timerRef.current);
+    // setShowOption(false);
+  }
   return (
     <div
-      className={`w-[100%] flex items-center pt-3 ${
+      ref={buttonRef}
+      onTouchStart={handleStartPressing}
+      onTouchEnd={handleEndPressing}
+      className={`w-[100%] relative flex items-center pt-3 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
+      {showOption && <Options />}
       <div
         className={`message-bubble ${
           isUser ? "bg-[#FD329B] text-white " : "bg-white text-black"

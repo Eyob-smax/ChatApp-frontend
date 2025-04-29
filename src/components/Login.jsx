@@ -1,28 +1,19 @@
 import React from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 export default function Login() {
-  const { state } = useLocation();
   const navigate = useNavigate();
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const username = formData.get("username");
-    const password = formData.get("password");
-
+  function submitAction(formData) {
+    const data = {
+      username: formData.get("username"),
+      password: formData.get("password"),
+    };
     if (
-      (username === "eyoba" || username === "kalye") &&
-      password === "eyukal"
+      (data.username === "eyoba" || data.username === "kalye") &&
+      data.password === "eyukal"
     ) {
-      localStorage.setItem("logged_in", true);
-      const loginData = {
-        username: username,
-        password: password,
-      };
-      navigate("/chat", {
-        state: { loginData },
-      });
+      sessionStorage.setItem("logged_in", true);
+      sessionStorage.setItem("user_data", JSON.stringify(data));
+      navigate("/chat");
     }
   }
 
@@ -30,7 +21,7 @@ export default function Login() {
     <div className="h-screen bg-amber-100 flex items-center justify-center flex-col">
       <h1 className="text-[24px] font-bold mb-5">Login</h1>
       <form
-        onSubmit={handleSubmit}
+        action={submitAction}
         className="items-center justify-center flex-col w-[70%]"
       >
         <div className="flex flex-col gap-2">
@@ -55,11 +46,7 @@ export default function Login() {
             type="password"
           />
         </div>
-        {state && (
-          <div>
-            <h2 className="text-red-500 text-center mt-5">{state}</h2>
-          </div>
-        )}
+
         <div className="mt-8">
           <button
             type="submit"

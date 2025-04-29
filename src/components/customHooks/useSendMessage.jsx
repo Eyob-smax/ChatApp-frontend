@@ -1,10 +1,17 @@
-import React, { useEffect } from "react";
-import socket from "../../service/ioConnection.js";
+import React, { useEffect, useState } from "react";
 
-export default function useSendMessage({ message }) {
+import { addMessages } from "../../service/api.js";
+
+export default function useSendMessage(data) {
+  const [result, setResult] = useState({});
   useEffect(() => {
-    if (message) {
-      socket.emit("message", message);
-    }
-  }, [message]);
+    (async () => {
+      if (!data) {
+        return;
+      }
+      const sendData = await addMessages(data);
+      setResult(sendData);
+    })();
+  }, [data]);
+  return result;
 }
