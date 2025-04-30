@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import Options from "./Options";
-export default function MessageBubble({ text, isUser, time = "01:20 PM" }) {
+
+export default function MessageBubble({
+  text,
+  isUser,
+  time = Date.now(),
+  deleteMessage,
+  editMessage,
+  messageId,
+}) {
   const [showOption, setShowOption] = useState(false);
   const buttonRef = useRef(null);
 
@@ -40,7 +48,13 @@ export default function MessageBubble({ text, isUser, time = "01:20 PM" }) {
         isUser ? "justify-end" : "justify-start"
       }`}
     >
-      {showOption && <Options />}
+      {showOption && (
+        <Options
+          editMessage={editMessage}
+          deleteMessage={deleteMessage}
+          messageId={messageId}
+        />
+      )}
       <div
         className={`message-bubble ${
           isUser ? "bg-[#FD329B] text-white " : "bg-white text-black"

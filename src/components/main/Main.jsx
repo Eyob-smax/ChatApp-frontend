@@ -4,15 +4,26 @@ import MessageBubble from "./MessageBubble";
 import socket from "../../service/ioConnection.js";
 import useSendMessage from "../customHooks/useSendMessage.jsx";
 import { getPreviousMessages } from "../../service/api.js";
+import { deleteMessageById } from "../../service/api.js";
+import { nanoid } from "nanoid";
 
 export default function Main() {
   const [messages, setMessages] = useState([]);
   const [messageObjData, setMessageObjData] = useState({});
   useSendMessage(messageObjData);
 
-  // function deleteMessage(id) {}
+  async function deleteMessage(id) {
+    const result = await deleteMessageById(id);
+    if (!result.success) {
+      alert("something went wrong with deleteing an error");
+      console.log(result);
+    }
+    setMessages((prev) => prev.filter((item) => item.id !== id));
+  }
 
-  // function editMessage(id) {}
+  async function editMessage(id) {
+    console.log(id);
+  }
 
   useEffect(() => {
     (async () => {
@@ -29,11 +40,12 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    const handleIncomingMessages = (data) => {
+    const handleIncomingMessages = ({ messageId, newMessage }) => {
       setMessages((prev) => [
         ...prev,
         {
-          message: data,
+          messageId,
+          message: newMessage,
           username: JSON.parse(sessionStorage.getItem("user_data")).username,
           isUser: false,
           time: new Date().toLocaleTimeString([], {
@@ -52,7 +64,9 @@ export default function Main() {
   }, []);
 
   const handleSendMessage = (newMessage) => {
+    const messageId = nanoid();
     const messageObj = {
+      messageId,
       message: newMessage,
       isUser: true,
       username: JSON.parse(sessionStorage.getItem("user_data")).username,
@@ -63,7 +77,7 @@ export default function Main() {
     };
 
     setMessages((prev) => [...prev, messageObj]);
-    socket.emit("new-message", newMessage);
+    socket.emit("new-message", { newMessage, messageId });
     setMessageObjData(messageObj);
   };
 
@@ -76,9 +90,9 @@ export default function Main() {
             text={item.message}
             isUser={item.isUser}
             time={item.time}
-            // deleteMessage={deleteMessage}
-            // editMessage={editMessage}
-            // messaId={}
+            deleteMessage={deleteMessage}
+            editMessage={editMessage}
+            messaId={item?._id || `${item.time}-${item.message}-${item.isUser}`}
           />
         ))}
       </div>
