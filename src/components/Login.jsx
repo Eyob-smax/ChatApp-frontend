@@ -1,13 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+
 export default function Login() {
   const navigate = useNavigate();
+
   function submitAction(formData) {
-    console.log(formData)
+    console.log(formData);
     const data = {
       username: formData.get("username"),
       password: formData.get("password"),
     };
+
     if (
       (data.username === "eyoba" || data.username === "kalye") &&
       data.password === "eyukal"
@@ -15,14 +18,22 @@ export default function Login() {
       sessionStorage.setItem("logged_in", true);
       sessionStorage.setItem("user_data", JSON.stringify(data));
       navigate("/chat");
+    } else {
+      alert("Invalid username or password");
     }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    submitAction(formData);
   }
 
   return (
     <div className="h-screen bg-amber-100 flex items-center justify-center flex-col">
       <h1 className="text-[24px] font-bold mb-5">Login</h1>
       <form
-        action={submitAction}
+        onSubmit={handleSubmit}
         className="items-center justify-center flex-col w-[70%]"
       >
         <div className="flex flex-col gap-2">
@@ -43,7 +54,7 @@ export default function Login() {
           <input
             name="password"
             id="password"
-            className="bg-white  py-2 px-2"
+            className="bg-white py-2 px-2"
             type="password"
           />
         </div>
