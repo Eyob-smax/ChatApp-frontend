@@ -8,6 +8,7 @@ export default function MessageBubble({
   deleteMessage,
   editMessage,
   messageId,
+  username,
 }) {
   const [showOption, setShowOption] = useState(false);
   const buttonRef = useRef(null);
@@ -42,8 +43,14 @@ export default function MessageBubble({
   return (
     <div
       ref={buttonRef}
-      onTouchStart={handleStartPressing}
-      onTouchEnd={handleEndPressing}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        handleStartPressing();
+      }}
+      onTouchEnd={(e) => {
+        e.stopPropagation();
+        handleEndPressing();
+      }}
       className={`w-[100%] relative flex items-center pt-3 ${
         isUser ? "justify-end" : "justify-start"
       }`}
@@ -53,15 +60,16 @@ export default function MessageBubble({
           editMessage={editMessage}
           deleteMessage={deleteMessage}
           messageId={messageId}
+          username={username}
         />
       )}
       <div
         className={`message-bubble ${
           isUser ? "bg-[#FD329B] text-white " : "bg-white text-black"
-        } relative rounded-[25px] px-5 py-3 mb-2 w-[70%] `}
+        } whitespace-pre-wrap relative rounded-[25px] px-5 py-3 mb-2 w-[70%]  break-words`}
       >
         <p
-          className={`absolute top-[59%] text-balck left-[77%] font-extralight text-[12px] `}
+          className={`absolute top-[100%] text-white  left-[77%]  text-[13px] `}
         >
           {time}
         </p>

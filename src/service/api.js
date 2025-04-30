@@ -86,7 +86,7 @@ async function deleteAllMessages(username) {
     const res = await fetch(`${id}/delete-all-messages`, {
       method: "DELETE",
       headers: {
-        "content-tyep": "application/json",
+        "content-type": "application/json",
       },
       body: JSON.stringify({ username }),
     });
@@ -110,16 +110,14 @@ async function deleteAllMessages(username) {
   }
 }
 
-async function editMessage(id, editedText) {
-  !id || !editedText ? "Incomplete data" : null;
-
+async function editMessage(messageId, editedText) {
   try {
     const res = await fetch(`${id}/edit-message`, {
-      method: "POST",
+      method: "PUT",
       headers: {
-        "content-tyep": "application/json",
+        "content-type": "application/json",
       },
-      body: JSON.stringify({ id, editedText }),
+      body: JSON.stringify({ messageId, editedText }),
     });
 
     const data = await res.json();
