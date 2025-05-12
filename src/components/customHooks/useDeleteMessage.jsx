@@ -10,5 +10,5 @@ export default function useDeleteMessage(setMessages) {
     socket.on("delete-message", onDeleteMessage);
 
     return () => socket.off("delete-message", onDeleteMessage);
-  }, []);
+  }, [setMessages]);
 }

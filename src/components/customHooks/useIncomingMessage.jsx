@@ -23,5 +23,5 @@ export default function useIncomingMessage(setMessages) {
     return () => {
       socket.off("new-message", handleIncomingMessages);
     };
-  }, []);
+  }, [setMessages]);
 }

@@ -13,5 +13,5 @@ export default function useGetAllMessage(setMessages) {
       }));
       setMessages(mapped);
     })();
-  }, []);
+  }, [setMessages]);
 }

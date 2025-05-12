@@ -14,5 +14,5 @@ export default function useEditMessage(setMessages) {
     };
     socket.on("edit-message", onEditMessage);
     return () => socket.off("edit-message", onEditMessage);
-  }, []);
+  }, [setMessages]);
 }
