@@ -1,127 +1,43 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Footer from "./Footer";
 import MessageBubble from "./MessageBubble";
 import socket from "../../service/ioConnection.js";
 import useSendMessage from "../customHooks/useSendMessage.jsx";
-import { getPreviousMessages } from "../../service/api.js";
+import useGetAllMessage from "../customHooks/useGetAllMessage.jsx";
 import { deleteMessageById } from "../../service/api.js";
-import { nanoid } from "nanoid";
 import { editMessage } from "../../service/api.js";
+import useIncomingMessage from "../customHooks/useIncomingMessage.jsx";
+import useEditMessage from "../customHooks/useEditMessage.jsx";
+import useDeleteMessage from "../customHooks/useDeleteMessage.jsx";
+import HandleSend from "../customHooks/HandleSend.jsx";
 
 export default function Main() {
   const [messages, setMessages] = useState([]);
   const [messageObjData, setMessageObjData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editedText, setEditedText] = useState("");
+  const bubbleRef = useRef(null);
   const messageRef = useRef(null);
-  useSendMessage(messageObjData);
   const messageBubbleContainer = useRef(null);
+  useSendMessage(messageObjData);
+  useGetAllMessage(setMessages);
+  useIncomingMessage(setMessages);
+  useEditMessage(setMessages);
+  useDeleteMessage(setMessages);
 
   function deleteMessage(id) {
     deleteMessageById(id);
-
     socket.emit("delete-message", { id });
     setMessages((prev) => prev.filter((item) => item.messageId !== id));
   }
-
-  const bubbleRef = useRef({});
 
   async function editMessageById(id) {
     bubbleRef.current = messages.find((item) => item.messageId === id);
     setIsEdit(true);
   }
 
-  useEffect(() => {
-    (async () => {
-      const result = await getPreviousMessages();
-      const mapped = result.map((item) => ({
-        ...item,
-        isUser:
-          item.username ===
-          JSON.parse(sessionStorage.getItem("user_data")).username,
-      }));
-      setMessages(mapped);
-      setTimeout(() => {
-        if (messageBubbleContainer.current) {
-          messageBubbleContainer.current.scrollTo({
-            top: messageBubbleContainer.current.scrollHeight,
-            behavior: "smooth",
-          });
-        }
-      }, 10);
-    })();
-  }, []);
-
-  useEffect(() => {
-    const handleIncomingMessages = ({ messageId, newMessage }) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          messageId: messageId,
-          message: newMessage,
-          isUser: false,
-          edited: false,
-          time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
-    };
-
-    socket.on("new-message", handleIncomingMessages);
-    setTimeout(() => {
-      if (messageBubbleContainer.current) {
-        messageBubbleContainer.current.scrollTo({
-          top: messageBubbleContainer.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, 10);
-    return () => {
-      socket.off("new-message", handleIncomingMessages);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onDeleteMessage = ({ id }) => {
-      setMessages((prev) => prev.filter((item) => item.messageId !== id));
-    };
-
-    socket.on("delete-message", onDeleteMessage);
-
-    return () => socket.off("delete-message", onDeleteMessage);
-  }, []);
-
-  useEffect(() => {
-    const onEditMessage = ({ id, editedText }) => {
-      setMessages((prev) => {
-        return prev.map((item) =>
-          item.messageId === id
-            ? { ...item, message: editedText, edited: true }
-            : item
-        );
-      });
-    };
-    socket.on("edit-message", onEditMessage);
-    return () => socket.off("edit-message", onEditMessage);
-  }, []);
-
   const handleSendMessage = (newMessage) => {
-    const messageId = nanoid();
-    const messageObj = {
-      messageId: messageId,
-      message: newMessage,
-      isUser: true,
-      username: JSON.parse(sessionStorage.getItem("user_data")).username,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setMessages((prev) => [...prev, messageObj]);
-    socket.emit("new-message", { newMessage, messageId });
+    const messageObj = HandleSend(setMessages, newMessage);
     setMessageObjData(messageObj);
     setTimeout(() => {
       if (messageBubbleContainer.current) {
