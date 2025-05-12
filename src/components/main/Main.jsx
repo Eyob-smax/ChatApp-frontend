@@ -15,25 +15,19 @@ export default function Main() {
   const [editedText, setEditedText] = useState("");
   const messageRef = useRef(null);
   useSendMessage(messageObjData);
+  const messageBubbleContainer = useRef(null);
 
   function deleteMessage(id) {
-    deleteMessageById(id)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    deleteMessageById(id);
 
+    socket.emit("delete-message", { id });
     setMessages((prev) => prev.filter((item) => item.messageId !== id));
   }
 
-  const bubbleRef = useRef(null);
+  const bubbleRef = useRef({});
 
   async function editMessageById(id) {
-    console.log("asdjkhflaksjdhfsdjk", id);
     bubbleRef.current = messages.find((item) => item.messageId === id);
-    console.log(bubbleRef.current);
     setIsEdit(true);
   }
 
@@ -47,6 +41,14 @@ export default function Main() {
           JSON.parse(sessionStorage.getItem("user_data")).username,
       }));
       setMessages(mapped);
+      setTimeout(() => {
+        if (messageBubbleContainer.current) {
+          messageBubbleContainer.current.scrollTo({
+            top: messageBubbleContainer.current.scrollHeight,
+            behavior: "smooth",
+          });
+        }
+      }, 10);
     })();
   }, []);
 
@@ -57,8 +59,8 @@ export default function Main() {
         {
           messageId: messageId,
           message: newMessage,
-          username: JSON.parse(sessionStorage.getItem("user_data")).username,
           isUser: false,
+          edited: false,
           time: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -68,10 +70,41 @@ export default function Main() {
     };
 
     socket.on("new-message", handleIncomingMessages);
-
+    setTimeout(() => {
+      if (messageBubbleContainer.current) {
+        messageBubbleContainer.current.scrollTo({
+          top: messageBubbleContainer.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 10);
     return () => {
       socket.off("new-message", handleIncomingMessages);
     };
+  }, []);
+
+  useEffect(() => {
+    const onDeleteMessage = ({ id }) => {
+      setMessages((prev) => prev.filter((item) => item.messageId !== id));
+    };
+
+    socket.on("delete-message", onDeleteMessage);
+
+    return () => socket.off("delete-message", onDeleteMessage);
+  }, []);
+
+  useEffect(() => {
+    const onEditMessage = ({ id, editedText }) => {
+      setMessages((prev) => {
+        return prev.map((item) =>
+          item.messageId === id
+            ? { ...item, message: editedText, edited: true }
+            : item
+        );
+      });
+    };
+    socket.on("edit-message", onEditMessage);
+    return () => socket.off("edit-message", onEditMessage);
   }, []);
 
   const handleSendMessage = (newMessage) => {
@@ -90,6 +123,14 @@ export default function Main() {
     setMessages((prev) => [...prev, messageObj]);
     socket.emit("new-message", { newMessage, messageId });
     setMessageObjData(messageObj);
+    setTimeout(() => {
+      if (messageBubbleContainer.current) {
+        messageBubbleContainer.current.scrollTo({
+          top: messageBubbleContainer.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 10);
   };
 
   function editSendHandler() {
@@ -108,17 +149,24 @@ export default function Main() {
     setIsEdit(false);
     editMessage(bubbleRef.current.messageId, editedText)
       .then((result) => {
-        console.log(result);
+        if (result.success === true) {
+          socket.emit("edit-message", {
+            id: bubbleRef.current.messageId,
+            editedText,
+          });
+        }
       })
       .catch((err) => {
         console.log(err);
       });
     setEditedText("");
   }
-
   return (
     <main className="bg-[url('/src/assets/images/chat-app.png')] bg-cover bg-center w-full h-full flex flex-col flex-1 items-end justify-center pt-2">
-      <div className="w-[94%] h-[73vh] mx-auto overflow-y-auto">
+      <div
+        ref={messageBubbleContainer}
+        className="w-[94%] h-[73vh] mx-auto overflow-y-auto"
+      >
         {messages.map((item, index) => (
           <MessageBubble
             ref={messageRef}
@@ -126,10 +174,12 @@ export default function Main() {
             text={item.message}
             isUser={item.isUser}
             time={item.time}
+            edited={item.edited}
             deleteMessage={deleteMessage}
             editMessage={editMessageById}
             username={item.username}
             messageId={item.messageId}
+            lastMessage={index === messages.length - 1}
           />
         ))}
       </div>
@@ -141,7 +191,6 @@ export default function Main() {
             defaultValue={bubbleRef.current?.message}
             className="rounded-[8px] shadow-2xl shadow-slate-950/5 ring-[#f9f9f9] w-[90%] py-3 px-4 mx-2 text-[20px]"
           />
-
           <button
             onClick={editSendHandler}
             className="bg-[#FD329B] text-white rounded-[6px] px-4 py-2"

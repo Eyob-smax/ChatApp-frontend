@@ -5,7 +5,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   function submitAction(formData) {
-    console.log(formData);
     const data = {
       username: formData.get("username"),
       password: formData.get("password"),

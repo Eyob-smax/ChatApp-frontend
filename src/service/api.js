@@ -1,4 +1,4 @@
-const id = "https://eyoba.up.railway.app";
+const id = "http://localhost:5000";
 
 async function getPreviousMessages() {
   try {
@@ -22,7 +22,6 @@ async function getPreviousMessages() {
 
 async function addMessages(data) {
   const { username, message } = data;
-  console.log(data);
   if (!username || !message) {
     return {
       success: false,

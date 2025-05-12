@@ -9,10 +9,12 @@ export default function MessageBubble({
   editMessage,
   messageId,
   username,
+  edited,
+  lastMessage,
 }) {
   const [showOption, setShowOption] = useState(false);
   const buttonRef = useRef(null);
-
+  const [showDetails, setShowDetail] = useState(false);
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (buttonRef.current && !buttonRef.current.contains(e.target)) {
@@ -43,6 +45,7 @@ export default function MessageBubble({
   return (
     <div
       ref={buttonRef}
+      onClick={() => setShowDetail((prev) => !prev)}
       onTouchStart={(e) => {
         e.stopPropagation();
         handleStartPressing();
@@ -51,8 +54,8 @@ export default function MessageBubble({
         e.stopPropagation();
         handleEndPressing();
       }}
-      className={`w-[100%] relative flex items-center pt-3 ${
-        isUser ? "justify-end" : "justify-start"
+      className={`w-[100%] relative flex flex-col justify-center pt-3 ${
+        isUser ? "items-end" : "items-start"
       }`}
     >
       {showOption && (
@@ -66,15 +69,21 @@ export default function MessageBubble({
       <div
         className={`message-bubble ${
           isUser ? "bg-[#FD329B] text-white " : "bg-white text-black"
-        } whitespace-pre-wrap relative rounded-[25px] px-5 py-3 mb-2 w-[70%]  break-words`}
+        } whitespace-pre-wrap relative rounded-[25px] px-5 py-3 mb-0 w-[70%]  break-words`}
       >
-        <p
-          className={`absolute top-[100%] text-white  left-[77%]  text-[13px] `}
-        >
-          {time}
-        </p>
         <p>{text}</p>
       </div>
+      {(showDetails || lastMessage) && (
+        <p
+          className={`text-[13px] px-3 ${
+            isUser ? "text-white" : "text-black font-semibold"
+          } my-0`}
+        >
+          <span>
+            {time} {edited && "edited"}
+          </span>
+        </p>
+      )}
     </div>
   );
 }
