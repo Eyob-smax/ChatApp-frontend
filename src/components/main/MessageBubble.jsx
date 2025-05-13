@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import Options from "./Options";
 
 export default function MessageBubble({
@@ -12,6 +12,13 @@ export default function MessageBubble({
   edited,
   lastMessage,
 }) {
+  const lastRef = useRef(null);
+  useLayoutEffect(() => {
+    if (lastRef.current) {
+      lastRef.current.scrollIntoView({ behaviour: "smooth" });
+    }
+  }, [lastMessage]);
+
   const [showOption, setShowOption] = useState(false);
   const buttonRef = useRef(null);
   const [showDetails, setShowDetail] = useState(false);
@@ -67,6 +74,7 @@ export default function MessageBubble({
         />
       )}
       <div
+        ref={lastMessage ? lastRef : null}
         className={`message-bubble ${
           isUser ? "bg-[#FD329B] text-white " : "bg-white text-black"
         } whitespace-pre-wrap relative rounded-[25px] px-5 py-3 mb-0 w-[70%]  break-words`}

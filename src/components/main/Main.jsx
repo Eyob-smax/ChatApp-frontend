@@ -39,14 +39,6 @@ export default function Main() {
   const handleSendMessage = (newMessage) => {
     const messageObj = HandleSend(setMessages, newMessage);
     setMessageObjData(messageObj);
-    setTimeout(() => {
-      if (messageBubbleContainer.current) {
-        messageBubbleContainer.current.scrollTo({
-          top: messageBubbleContainer.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, 10);
   };
 
   function editSendHandler() {
@@ -86,7 +78,7 @@ export default function Main() {
         {messages.map((item, index) => (
           <MessageBubble
             ref={messageRef}
-            key={index}
+            key={item.messageId}
             text={item.message}
             isUser={item.isUser}
             time={item.time}
